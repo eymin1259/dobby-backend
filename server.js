@@ -1,6 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
+const { sequelize } = require("./src/models/index.js");
 
 const app = express();
 const port = process.env.PORT || 8080;
@@ -12,21 +13,23 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // Parse requests of content-type: application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.urlencoded({ extended: true }));
 
 // RESTful API route for DB
-app.use('/', require('./src/mysql/router/route.ts'));
+// app.use('/', require('./src/mysql/router/route.ts'));
 
-const db = require('./src/mysql/models/index.ts');
-  db.sequelizeConfig.sync();
+sequelize
+  .sync({ force: false })
+  .then(() => {
+    console.log("success");
+  })
+  .catch((err) => {
+    console.log(err);
+  });
 
 const dotenv = require("dotenv").config();
-// const mysqlConnectObj = require("./src/config/mysql");
-// const db = mysqlConnectObj.init();
 
-// mysqlConnectObj.open(db);
-
-app.listen(port, () => console.log("sever running.."));
+app.listen(port, () => console.log("server running.."));
 
 app.get("/", (req, res) => res.send("hello NH world, home"));
 

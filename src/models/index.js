@@ -1,19 +1,23 @@
-const dbConfig = require('../config/mysql.ts');
-const Sequelize = require('sequelize');
+const Sequelize = require("sequelize");
+
+const env = process.env.NODE_ENV || "development";
+const config = require(__dirname + "/../config/config.js")[env];
+
 const db = {};
 
-//dev 서버 prd 서버 구분 필요
-let sequelizeConfig;
-sequelizeConfig = new Sequelize(
-  dbConfig.database,
-  dbConfig.username,
-  dbConfig.password,
-  {
-    host: dbConfig.host
-  }
-);
+let sequelize;
+if (config.use_env_variable) {
+  sequelize = new Sequelize(process.env[config.use_env_variable], config);
+} else {
+  sequelize = new Sequelize(
+    config.database,
+    config.username,
+    config.password,
+    config
+  );
+}
 
-db?.sequelizeConfig = sequelizeConfig;
-db?.Sequelize = Sequelize;
+db.sequelize = sequelize;
+db.Sequelize = Sequelize;
 
 module.exports = db;
