@@ -43,5 +43,5 @@ app.listen(port, () => {
     console.log("Development Mode");
   }
   // eslint-disable-next-line no-console
-  console.log(`GGBD server app listening at http://localhost:${port}`);
+  console.log("dobby's project");
 });
