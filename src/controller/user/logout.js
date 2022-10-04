@@ -4,8 +4,9 @@ const { user } = require("../../models");
 module.exports = async (req, res) => {
   try {
     const { authorization } = req.headers;
-    console.log("authorization", authorization);
-    const token = authorization.split("")[1];
+    // console.log("authorization", req.headers);
+    //Bearer로 자를지 논의 필요!
+    const token = authorization.split(" ")[1];
     await jwt.verify(token, process.env.JWT_SECRET_KEY, async (_, decode) => {
       const info = await user.findOne({ where: { id: decode.id } });
       if (!info) {
