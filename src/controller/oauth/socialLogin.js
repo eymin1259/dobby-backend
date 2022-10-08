@@ -5,6 +5,7 @@ const { user } = require("../../models");
 module.exports = async (req, res) => {
   try {
     // 소셜로그인에서 받아오는 토큰 확인 필요
+    
     const socialAccessToken = req.body.tokenData.data.access_token;
     const { state } = req.body;
     let getUserInfoUrl;
