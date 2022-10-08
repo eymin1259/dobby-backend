@@ -13,7 +13,7 @@ module.exports = async (req, res) => {
       getUserInfoUrl = "https://kapi.kakao.com/v2/user/me";
     } else if (state === "google") {
       // 구글 url 넣으세요
-      getUserInfoUrl = "구글url";
+      getUserInfoUrl = `https://www.googleapis.com/oauth2/v2/userinfo?access_token=${socialAccessToken}`;
     } else {
       //그 외는 애플만 있다고 가정 (애플 url 넣으세요.)
       getUserInfoUrl = "애플 url";
@@ -37,7 +37,13 @@ module.exports = async (req, res) => {
         loginType: "kakao",
       };
     } else if (state === "google") {
-      userInfoValue = {};
+      userInfoValue = {
+        ...userInfoValue,
+        nickname: userInfo.data.given_name,
+        img: userInfo.data.picture,
+        //로그인 타입 db 추가 예정
+        loginType: "google",
+      };
     } else {
       userInfoValue = {};
     }
