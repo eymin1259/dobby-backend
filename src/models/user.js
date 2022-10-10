@@ -1,11 +1,31 @@
 const { Sequelize, DataTypes, Model } = require("sequelize");
 
 module.exports = (sequelize, DataTypes) => {
-  class user extends Model {
+  class users extends Model {
     static associate(models) {
-      user.hasMany;
+      users.hasMany(models.tasks, {
+        foreignKey: "user_id",
+      });
     }
   }
+  users.init(
+    {
+      // id: DataTypes.INTEGER,
+      user_name: DataTypes.STRING,
+      user_email: DataTypes.STRING,
+      profile_color: DataTypes.STRING,
+      profile_url: DataTypes.STRING,
+      signup_time: DataTypes.DATE,
+      start_time: DataTypes.DATE,
+      revise_time: DataTypes.DATE,
+    },
+    {
+      sequelize,
+      modelName: "users",
+    }
+  );
+
+  return users;
 };
 
 // module.exports = (sequelize, DataTypes) => {
