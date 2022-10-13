@@ -8,7 +8,7 @@ const jwt = require("jsonwebtoken");
 
 module.exports = async (req, res) => {
     try {
-        const refreshToken = ""; // apple refreshToken
+        const refreshToken = ""; // apple user refreshToken
 
         // make client_secret
         const algorithm = process.env.ALG;  // 알고리즘
@@ -45,11 +45,13 @@ module.exports = async (req, res) => {
                 },
             },
         ).then(function (response) {
+            console.log("revoke success");
             console.log(response);
             res.status(200).send();
         }).catch(function (error) {
+            console.log("revoke fail");
             console.log(error);
-            res.status(400).send(`error -> ${e}`);
+            res.status(400).send(`error -> ${error}`);
         });
 
 
