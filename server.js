@@ -1,7 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
-const { sequelize } = require("./src/models/index.js");
+const { sequelize } = require("./src/models/index");
 const router = require("./src/router");
 
 const app = express();
@@ -22,7 +22,7 @@ app.use("/", router);
 // app.use('/', require('./src/mysql/router/route.ts'));
 
 sequelize
-  .sync({ force: false })
+  .sync({ force: false ,  alter: false})
   .then(() => {
     console.log("success");
   })
