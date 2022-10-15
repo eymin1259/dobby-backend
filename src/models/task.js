@@ -1,17 +1,18 @@
 const { Sequelize, DataTypes, Model } = require("sequelize");
 
 module.exports = (sequelize, DataTypes) => {
-  class tasks extends Model {
+  class TASK extends Model {
     static associate(models) {
-      tasks.belongsTo(models.users, {
+      // console.log("모델스", models);
+      TASK.belongsTo(models.user, {
         foreignKey: "id",
       });
-      tasks.belongsTo(models.chores, {
-        foreignKey: "chore_index",
+      TASK.belongsTo(models.CHORES, {
+        foreignKey: "chores_index",
       });
     }
   }
-  tasks.init(
+  TASK.init(
     {
       // id: DataTypes.INTEGER,
       user_id: DataTypes.INTEGER,
@@ -26,10 +27,10 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: "tasks",
+      modelName: "TASK",
     }
   );
-  return tasks;
+  return TASK;
 
   // const Task = sequelize.define(
   //   "Task",

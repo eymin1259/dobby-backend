@@ -1,14 +1,14 @@
 const { Sequelize, DataTypes, Model } = require("sequelize");
 
 module.exports = (sequelize, DataTypes) => {
-  class chores extends Model {
+  class CHORES extends Model {
     static associate(models) {
-      chores.hasMany(models.tasks, {
+      CHORES.hasMany(models.TASK, {
         foreignKey: "chores_index",
       });
     }
   }
-  chores.init(
+  CHORES.init(
     {
       // id: DataTypes.INTEGER,
       chores_index: DataTypes.INTEGER,
@@ -16,10 +16,10 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: "chores",
+      modelName: "CHORES",
     }
   );
-  return chores;
+  return CHORES;
   // const Chores = sequelize.define(
   //   "Chores",
   //   {

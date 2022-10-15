@@ -34,8 +34,7 @@ fs.readdirSync(__dirname)
   });
 
 Object.keys(db).forEach((modelName) => {
-  console.log("ㅎㅎ", modelName);
-
+  console.log("config", db[modelName]);
   if (db[modelName].associate) {
     db[modelName].associate(db);
   }
@@ -43,7 +42,5 @@ Object.keys(db).forEach((modelName) => {
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
-
-// console.log("config", db.Sequelize);
 
 module.exports = db;

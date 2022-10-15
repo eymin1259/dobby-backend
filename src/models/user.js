@@ -1,14 +1,14 @@
 const { Sequelize, DataTypes, Model } = require("sequelize");
 
 module.exports = (sequelize, DataTypes) => {
-  class users extends Model {
+  class user extends Model {
     static associate(models) {
-      users.hasMany(models.tasks, {
-        foreignKey: "user_id",
+      user.hasMany(models.TASK, {
+        foreignKey: "id",
       });
     }
   }
-  users.init(
+  user.init(
     {
       // id: DataTypes.INTEGER,
       user_name: DataTypes.STRING,
@@ -21,11 +21,11 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: "users",
+      modelName: "user",
     }
   );
 
-  return users;
+  return user;
 };
 
 // module.exports = (sequelize, DataTypes) => {

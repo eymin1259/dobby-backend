@@ -1,13 +1,13 @@
 const axios = require("axios");
 const { response } = require("express");
 const jwt = require("jsonwebtoken");
-const { users } = require("../../models");
+const { user } = require("../../models");
 
 module.exports = async (req, res) => {
   const { authorizationCode } = req.body;
   console.log("카카오로그인", authorizationCode);
   const KakaoAccessToken =
-    "rRAU5Ey-gRG8XVrNvefY0C3kEx8BK3OhvGTJov8WCj1z6wAAAYPBhpjq";
+    "js-T6YucJpbZhIZwyih5Jo_Hye9jRVDHoiCAZCkhCj11GgAAAYPY-Jao";
   try {
     // const TokenResponse = await axios({
     //   method: "POST",
@@ -39,15 +39,15 @@ module.exports = async (req, res) => {
       user_name: kakaoUserInfo.data.properties.nickname,
       profile_url: kakaoUserInfo.data.properties.thumbnail_image,
     };
+    console.log("카카오로그인_정보", user);
 
-    console.log("카카오로그인_정보", users);
     // user모델 수정 필
-    await users.findOrCreate({
+    await user.findOrCreate({
       where: { id: kakaoUserInfo.data.id },
       defaults: userInfo,
     });
 
-    const userData = await users.findOne({
+    const userData = await user.findOne({
       where: { id: kakaoUserInfo.data.id },
     });
 
