@@ -5,7 +5,7 @@ const { sequelize } = require("./src/models/index");
 const router = require("./src/router");
 // const morgan = require('morgan')
 const morgan = require('morgan');
-
+const verifyToken = require('./src/middleware/verifyJwt');
 const app = express();
 const port = process.env.PORT || 8080;
 
@@ -20,7 +20,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // jwt middleware
-// app.use(verifyJwt);
+app.use(verifyToken);
 
 app.use("/", router);
 

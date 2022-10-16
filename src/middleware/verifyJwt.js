@@ -1,20 +1,17 @@
 const jwt = require('jsonwebtoken');
+const AuthService = require('../service/AuthService');
 
 verifyToken = async (req, res, next) => {
   try{
     const { authorization } = req.headers;
-
-    const verificationResult = await jwt.verify(authorization, rocess.env.JWT_SECRET_KEY);
-    console.dir(verificationResult);
-
-    req.userInfo = verificationResult;
-
+    const aceessToken = authorization.split("Bearer")[1].trim();    
+    const authService = new AuthService();
+    const verificationResult = authService.verifyAccessToken(aceessToken);
+    req.userId = verificationResult.id;
     next();
   } catch(err) {
-    return res.status(401).json({
-      code: 401,
-      message: 'ACCESS_TOKEN_VERIFICATION_FAIL'
-    })
+    req.userId = null
+    next();
   }
 }
 
