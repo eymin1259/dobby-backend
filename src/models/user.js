@@ -9,7 +9,7 @@ module.exports = (sequelize) => {
                 allowNull: false,
             },
             email: {
-                type: DataTypes.STRING(500),
+                type: DataTypes.STRING(300),
                 allowNull: false,
             },
             home_id: {
@@ -25,19 +25,20 @@ module.exports = (sequelize) => {
                 allowNull: false,
             },
             sns_access_token: {
-                type: DataTypes.STRING(1000),
+                type: DataTypes.STRING(200),
                 allowNull: true,
             },
             sns_refresh_token: {
-                type: DataTypes.STRING(1000),
+                type: DataTypes.STRING(200),
                 allowNull: true,
             },
             sns_user_id: {
-                type: DataTypes.STRING(1000),
+                type: DataTypes.STRING(200),
                 allowNull: false,
+                unique: true
             },
             sns_type: {
-                type: DataTypes.STRING(200),
+                type: DataTypes.STRING(100),
                 allowNull: false,
             },
         },

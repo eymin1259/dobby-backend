@@ -6,35 +6,43 @@ const querystring = require('querystring');
 const jwt_decode = require("jwt-decode");
 const jwt = require("jsonwebtoken");
 const jwksClient = require("jwks-rsa");
+const AuthService = require('../../service/AuthService');
 
 module.exports = async (req, res) => {
-  const { identityToken, authorizeCode } = req.body;
+  const { 
+    snsUserName,
+    snsUserEmail,
+    snsUserId,
+    authorizeCode 
+  } = req.body;
 
   try {
 
     /*--------------------- 1. verify  identityToken -------------------------*/
-    const applePublicKeysRes = await axios.get("https://appleid.apple.com/auth/keys");
-    const applePublicKeys = applePublicKeysRes.data
+    // const applePublicKeysRes = await axios.get("https://appleid.apple.com/auth/keys");
+    // const applePublicKeys = applePublicKeysRes.data
 
-    const client = jwksClient({
-      jwksUri: 'https://appleid.apple.com/auth/keys',
-    });
+    // const client = jwksClient({
+    //   jwksUri: 'https://appleid.apple.com/auth/keys',
+    // });
 
-    const tokenDecodedHeader = jwt_decode(identityToken, { header: true });
-    const kid = tokenDecodedHeader.kid;
-    const alg = tokenDecodedHeader.alg;
+    // const tokenDecodedHeader = jwt_decode(identityToken, { header: true });
+    // const kid = tokenDecodedHeader.kid;
+    // const alg = tokenDecodedHeader.alg;
 
 
-    const validKey = applePublicKeys.keys.filter(item => item['kid'] === kid && item['alg'] === alg)[0];
-    const validKid = validKey.kid;
+    // const validKey = applePublicKeys.keys.filter(item => item['kid'] === kid && item['alg'] === alg)[0];
+    // const validKid = validKey.kid;
 
-    const signingKey = await client.getSigningKey(validKid);
-    const publicKey = signingKey.getPublicKey();
+    // const signingKey = await client.getSigningKey(validKid);
+    // const publicKey = signingKey.getPublicKey();
 
-    // verify identityToken result
-    const verificationResult = jwt.verify(identityToken, publicKey);
-    
+    // // verify identityToken result
+    // const verificationResult = jwt.verify(identityToken, publicKey);
+    // console.dir(verificationResult);
 
+    // const snsUserEmail = verificationResult.email;
+    // const snsUserId = verificationResult.sub;
 
     /*--------------------- 2. generate access token, refresh token -------------------------*/
 
@@ -58,7 +66,7 @@ module.exports = async (req, res) => {
         subject: subject,
         expiresIn: expiresIn
       });
-
+      
     const tokenresult = await axios.post(
       'https://appleid.apple.com/auth/token',
       querystring.stringify({
@@ -74,13 +82,20 @@ module.exports = async (req, res) => {
       },
     );
 
-    const accessToken = tokenresult.data.access_token;
-    const refreshToken = tokenresult.data.refresh_token;
+    const snsAccessToken = tokenresult.data.access_token;
+    const snsRefreshToken = tokenresult.data.refresh_token;
+
+    // user 로그인 및 jwtAccessToken, jwtRefreshToken 발급
+    const authService = new AuthService();
+    const loginUser = await authService.login(snsUserName, snsUserEmail, "apple", snsUserId, snsAccessToken, snsRefreshToken);
+    const accessToken = authService.generateAccessToken(loginUser.id);
+    const refreshToken = authService.generateRefreshToken();
 
     res.status(200).json({
       "accessToken": accessToken,
       "refreshToken": refreshToken,
     });
+
   } catch (e) {
     res.status(400).send(`err -> ${e}`);
   }
