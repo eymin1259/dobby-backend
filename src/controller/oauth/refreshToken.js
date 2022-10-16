@@ -7,7 +7,7 @@ module.exports = async (req, res) => {
     const verifiedToken = authService.verifyRefreshToken(refreshToken);
 
     if (verifiedToken == null) {
-      res.status(401).send({message : "invalidate RefreshToken"})
+      res.status(401).send({message : "invalide RefreshToken"})
     }
 
     const newAccessToken = authService.refreshAccessToken(verifiedToken);
