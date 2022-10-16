@@ -46,7 +46,7 @@ module.exports = async (req, res) => {
 
     /*--------------------- 2. generate access token, refresh token -------------------------*/
 
-    // make client_secret
+    // 2.1 make client_secret
     const algorithm = process.env.ALG;  // 알고리즘
     const keyid = process.env.KID;  // [key ID]
     const issuer = process.env.ISS;  // [팀 ID = App ID Prefix]
@@ -54,7 +54,6 @@ module.exports = async (req, res) => {
     const audience = "https://appleid.apple.com";
     const subject = process.env.SUB;  // [앱번들아이디 또는 서비스아이디]"
     const authkey = fs.readFileSync(process.env.AUTHKEY, 'utf8');
-
     const client_secret = jwt.sign(
       {},
       authkey,
@@ -67,6 +66,7 @@ module.exports = async (req, res) => {
         expiresIn: expiresIn
       });
       
+    // 2.2 snsAccessToken, snsRefreshToken 발행
     const tokenresult = await axios.post(
       'https://appleid.apple.com/auth/token',
       querystring.stringify({
@@ -81,13 +81,14 @@ module.exports = async (req, res) => {
         },
       },
     );
-
     const snsAccessToken = tokenresult.data.access_token;
     const snsRefreshToken = tokenresult.data.refresh_token;
 
-    // user 로그인 및 jwtAccessToken, jwtRefreshToken 발급
+    // 3. user 로그인
     const authService = new AuthService();
     const loginUser = await authService.login(snsUserName, snsUserEmail, "apple", snsUserId, snsAccessToken, snsRefreshToken);
+
+    // 4. jwtAccessToken, jwtRefreshToken 발급
     const accessToken = authService.generateAccessToken(loginUser.id);
     const refreshToken = authService.generateRefreshToken();
 

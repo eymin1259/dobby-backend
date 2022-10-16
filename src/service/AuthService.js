@@ -8,23 +8,29 @@ dotenv.config();
 module.exports = class AuthService {
     async login(name, email, snsType, snsUserId, snsAccessToken, snsRefreshToken) {
 
+        // 이미 가입 했었던 유저인지 확인
         let user = await User.findOne({
             where: {
                 sns_user_id: snsUserId
             },
         });
 
+        // 이미존재하는 유저 였다면 snsAccessToken,  snsRefreshToken 업데이트
         if (user) {
+            user.set({
+                sns_access_token: snsAccessToken,
+                sns_refresh_token: snsRefreshToken
+            })
+            await user.save();
             return user;
         }
 
+        // 회원가입 
         const uniqueString = crypto.randomBytes(20).toString('hex');
         const newhome = await Home.create({
             inviteCode: uniqueString
         });
-
         const randomColor = getRandomColor();
-
         user = await User.create({
             name: name,
             email: email,
@@ -35,9 +41,7 @@ module.exports = class AuthService {
             sns_user_id: snsUserId,
             sns_type: snsType
         });
-
         return user
-
     }
 
     generateAccessToken(userId) {
