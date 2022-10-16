@@ -31,6 +31,7 @@ module.exports = (sequelize) => {
             sns_refresh_token: {
                 type: DataTypes.STRING(200),
                 allowNull: true,
+                unique: true
             },
             sns_user_id: {
                 type: DataTypes.STRING(200),

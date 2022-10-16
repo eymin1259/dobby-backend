@@ -68,8 +68,15 @@ module.exports = class AuthService {
         return verificationResult;
     }
 
-    refreshAccessToken() {
+    refreshAccessToken(refreshToken) {
+        let user = await User.findOne({
+            where: {
+                sns_refresh_token: refreshToken
+            },
+        });
 
+        const newToken = this.generateAccessToken(user.id);
+        return newToken;
     }
 
     generateRefreshToken() {
@@ -85,7 +92,18 @@ module.exports = class AuthService {
         return refreshToken;
     }
 
-    verifyRefreshToken() {
-
+    verifyRefreshToken(refreshToken) {
+        try {
+            const verificationResult = jwt.verify(
+                refreshToken,
+                process.env.JWT_SECRET_KEY,
+                {
+                    algorithm: 'HS256'
+                });
+            return verificationResult;
+        }
+        catch {
+            return null
+        }
     }
 }
