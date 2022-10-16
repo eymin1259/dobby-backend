@@ -98,6 +98,6 @@ module.exports = async (req, res) => {
     });
 
   } catch (e) {
-    res.status(400).send(`err -> ${e}`);
+    res.status(404).send({ message: e.message });
   }
 };

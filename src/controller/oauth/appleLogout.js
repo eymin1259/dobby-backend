@@ -51,12 +51,12 @@ module.exports = async (req, res) => {
         }).catch(function (error) {
             console.log("revoke fail");
             console.log(error);
-            res.status(400).send(`error -> ${error}`);
+            res.status(404).send({ message: e.message });
         });
 
 
 
     } catch (e) {
-        res.status(400).send(`err -> ${e}`);
+        res.status(404).send({ message: e.message });
     }
 };
