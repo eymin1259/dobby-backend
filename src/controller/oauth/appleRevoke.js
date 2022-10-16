@@ -1,14 +1,22 @@
 const axios = require("axios");
-const { response } = require("express");
-const { user } = require("../../models");
 const fs = require("fs");
 const querystring = require('querystring');
-const jwt_decode = require("jwt-decode");
 const jwt = require("jsonwebtoken");
+const UserService = require('../../service/UserService');
 
 module.exports = async (req, res) => {
     try {
-        const refreshToken = ""; // apple user refreshToken
+
+        const userService = new UserService();
+        const userId = req.userId;
+        if (!userId) {
+            // access token 만료
+            res.status(401).send({
+                message: 'invalide access token'
+            });
+        }
+        const user = userService.getUser(userId);
+        const refreshToken = user.sns_refresh_token; // apple user refreshToken
 
         // make client_secret
         const algorithm = process.env.ALG;  // 알고리즘
@@ -45,6 +53,7 @@ module.exports = async (req, res) => {
                 },
             },
         ).then(function (response) {
+            userService.deleteUser(userId);
             console.log("revoke success");
             console.log(response);
             res.status(200).send();
