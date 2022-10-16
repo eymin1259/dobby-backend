@@ -16,14 +16,17 @@ module.exports = async (req, res) => {
             });
         }
         const user = userService.getUser(userId);
-        const kakaoAcessToken = user.sns_access_token; 
-
+        const kakaoUserId = user.sns_user_id; 
+        
         axios.post(
             'https://kapi.kakao.com/v1/user/unlink',
-            querystring.stringify({}),
+            querystring.stringify({
+                'target_id_type': 'user_id',
+                'target_id': kakaoUserId,
+            }),
             {
                 headers: {
-                    "Authorization": `Bearer ${kakaoAcessToken}`,
+                    "Authorization": `KakaoAK ${process.env.KAKAO_ADMIN_KEY}`,
                     'Content-Type': 'application/x-www-form-urlencoded',
                 },
             },
@@ -37,6 +40,7 @@ module.exports = async (req, res) => {
             console.log(error);
             res.status(404).send({ message: e.message });
         });
+        
         res.status(200).send({  message: 'success' });
     } catch (e) {
         res.status(404).send({ message: e.message });
