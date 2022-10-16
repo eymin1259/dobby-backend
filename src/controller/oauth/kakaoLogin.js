@@ -2,12 +2,13 @@ const axios = require("axios");
 const { response } = require("express");
 const jwt = require("jsonwebtoken");
 const { user } = require("../../models");
+const AuthService = require('../../service/AuthService');
 
 module.exports = async (req, res) => {
-  const { authorizationCode } = req.body;
-  console.log("카카오로그인", authorizationCode);
-  const KakaoAccessToken =
-    "js-T6YucJpbZhIZwyih5Jo_Hye9jRVDHoiCAZCkhCj11GgAAAYPY-Jao";
+  // const { authorizationCode } = req.body;
+  // console.log("카카오로그인", authorizationCode);
+  // const KakaoAccessToken =
+  //   "js-T6YucJpbZhIZwyih5Jo_Hye9jRVDHoiCAZCkhCj11GgAAAYPY-Jao";
   try {
     // const TokenResponse = await axios({
     //   method: "POST",
@@ -26,32 +27,52 @@ module.exports = async (req, res) => {
 
     // const KakaoAccessToken = TokenResponse.data.access_token;
 
+    const { accessToken, refreshToken } = req.body;
     const kakaoUserInfo = await axios({
       method: "GET",
       url: "https://kapi.kakao.com/v2/user/me",
       headers: {
-        Authorization: `Bearer ${KakaoAccessToken}`,
+        'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
       },
     });
-    // console.log("카카오로그인_정보", kakaoUserInfo);
 
-    const userInfo = {
-      user_name: kakaoUserInfo.data.properties.nickname,
-      profile_url: kakaoUserInfo.data.properties.thumbnail_image,
-    };
-    console.log("카카오로그인_정보", user);
+    const snsUserName = kakaoUserInfo.data.properties.nickname;
+    const snsUserEmail = kakaoUserInfo.data.kakao_account.email;
+    const snsUserId = kakaoUserInfo.data.id;
+    const profileUrl =  kakaoUserInfo.data.properties.thumbnail_image;
 
-    // user모델 수정 필
-    await user.findOrCreate({
-      where: { id: kakaoUserInfo.data.id },
-      defaults: userInfo,
+    const authService = new AuthService();
+    const loginUser = await authService.login(snsUserName, snsUserEmail, "kakao", snsUserId, accessToken, refreshToken, profileUrl);
+
+    // 4. jwtAccessToken, jwtRefreshToken 발급
+    const jwtAccessToken = authService.generateAccessToken(loginUser.id);
+    const jwtRefreshToken = authService.generateRefreshToken();
+
+    res.status(200).json({
+      "accessToken": jwtAccessToken,
+      "refreshToken": jwtRefreshToken,
     });
+    // const userInfo = {
+    //   user_name: kakaoUserInfo.data.properties.nickname,
+    //   profile_url: kakaoUserInfo.data.properties.thumbnail_image,
+    // };
 
-    const userData = await user.findOne({
-      where: { id: kakaoUserInfo.data.id },
-    });
 
-    const payload = userData.get();
+
+    // console.log("카카오로그인_정보", user);
+
+    // // user모델 수정 필
+    // await user.findOrCreate({
+    //   where: { id: kakaoUserInfo.data.id },
+    //   defaults: userInfo,
+    // });
+
+    // const userData = await user.findOne({
+    //   where: { id: kakaoUserInfo.data.id },
+    // });
+
+    // const payload = userData.get();
 
     // const userInfoValue = {
     //   ...userInfoValue,
@@ -75,6 +96,7 @@ module.exports = async (req, res) => {
     // });
     // console.log("카카오로그인 get", userInfo);
   } catch (e) {
-    res.status(500).send(`카카오 로그인에 해당 에러가 났습니다. => ${e} `);
+    console.log(e);
+    res.status(404).send({ message: e.message });
   }
 };

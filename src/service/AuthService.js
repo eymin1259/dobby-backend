@@ -6,7 +6,7 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 module.exports = class AuthService {
-    async login(name, email, snsType, snsUserId, snsAccessToken, snsRefreshToken) {
+    async login(name, email, snsType, snsUserId, snsAccessToken, snsRefreshToken, profileUrl) {
 
         // 이미 가입 했었던 유저인지 확인
         let user = await User.findOne({
@@ -36,6 +36,7 @@ module.exports = class AuthService {
             email: email,
             home_id: newhome.id,
             profile_color: randomColor,
+            profile_url: profileUrl,
             sns_access_token: snsAccessToken,
             sns_refresh_token: snsRefreshToken,
             sns_user_id: snsUserId,
@@ -68,7 +69,7 @@ module.exports = class AuthService {
         return verificationResult;
     }
 
-    refreshAccessToken(refreshToken) {
+    async refreshAccessToken(refreshToken) {
         let user = await User.findOne({
             where: {
                 sns_refresh_token: refreshToken
