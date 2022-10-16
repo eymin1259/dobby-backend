@@ -83,10 +83,11 @@ module.exports = async (req, res) => {
     );
     const snsAccessToken = tokenresult.data.access_token;
     const snsRefreshToken = tokenresult.data.refresh_token;
+    const profileUrl = "";
 
     // 3. user 로그인
     const authService = new AuthService();
-    const loginUser = await authService.login(snsUserName, snsUserEmail, "apple", snsUserId, snsAccessToken, snsRefreshToken);
+    const loginUser = await authService.login(snsUserName, snsUserEmail, "apple", snsUserId, snsAccessToken, snsRefreshToken, profileUrl);
 
     // 4. jwtAccessToken, jwtRefreshToken 발급
     const accessToken = authService.generateAccessToken(loginUser.id);
