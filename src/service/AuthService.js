@@ -58,8 +58,14 @@ module.exports = class AuthService {
         return accessToken;
     }
 
-    verifyAccessToken() {
-
+    verifyAccessToken(aceessToken) {
+        const verificationResult = jwt.verify(
+            aceessToken,
+            process.env.JWT_SECRET_KEY,
+            {
+                algorithm: 'HS256'
+            });
+        return verificationResult;
     }
 
     refreshAccessToken() {
@@ -69,9 +75,9 @@ module.exports = class AuthService {
     generateRefreshToken() {
 
         const refreshToken = jwt.sign(
-            {},
+            {},  // refresh token은 payload 없이 발급
             process.env.REFRESH_TOKEN,
-            { // refresh token은 payload 없이 발급
+            {
                 algorithm: 'HS256',
                 expiresIn: '14d',
             });
