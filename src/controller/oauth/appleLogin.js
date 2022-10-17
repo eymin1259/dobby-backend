@@ -53,7 +53,8 @@ module.exports = async (req, res) => {
     const expiresIn = 15777000;         // 토큰만료시간 6개월(초),  토큰생성시간 -> jwt.sign()에 전달안해주면 현재시간으로 세팅
     const audience = "https://appleid.apple.com";
     const subject = process.env.SUB;  // [앱번들아이디 또는 서비스아이디]"
-    const authkey = fs.readFileSync(process.env.AUTHKEY, 'utf8');
+    // const authkey = fs.readFileSync(process.env.AUTHKEY, 'utf8');
+    const authkey = process.env.AUTHKEY_STR;
     const client_secret = jwt.sign(
       {},
       authkey,
